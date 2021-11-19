@@ -1,5 +1,4 @@
 graze.exe
-graze
 # Not ready for primetime yet :wink:
-schema/wipc.go
+graze/schema/wipc.go
 
