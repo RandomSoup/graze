@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"strings"
 
@@ -80,6 +81,7 @@ func (p PiperSchemaHandler) Query(uri string) SchemaQueryResponse {
 		grazeQueryResponse.Status = "Ok/Rdl"
 		grazeQueryResponse.StatusColor = 0
 		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("Saving file to downloads/", "", 0))
+		ioutil.WriteFile(strings.Split(path, "/")[len(strings.Split(path, "/"))-1], respBytes[9:], 0667)
 
 	case 0x22:
 		grazeQueryResponse.Status = "Error"

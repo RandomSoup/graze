@@ -26,7 +26,11 @@ type ISchemaHandler interface {
 
 func BuildSchemaTable() map[string]ISchemaHandler {
 	table := make(map[string]ISchemaHandler)
+	//internal browser URLs
 	table["graze"] = GrazeSchemaHandler{}
+	//piper hander
 	table["piper"] = PiperSchemaHandler{}
+	// wIPC debugger
+	table["wipc"] = PiperSchemaHandler{}
 	return table
 }
