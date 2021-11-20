@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"luminoso.dev/graze/graze"
