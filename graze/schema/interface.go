@@ -32,5 +32,7 @@ func BuildSchemaTable() map[string]ISchemaHandler {
 	table["piper"] = PiperSchemaHandler{}
 	// wIPC debugger
 	table["wipc"] = WIPCSchemaHandler{}
+	// piper debugger
+	table["piperd"] = PiperDSchemaHandler{}
 	return table
 }
