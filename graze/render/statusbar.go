@@ -7,7 +7,7 @@ import (
 )
 
 //renders the status bar. Who woulda thought?
-func SBRender(URLText, statusText string, statusColor int, x, y, size float32, font rl.Font, scrollTT bool) {
+func SBRender(URLText, statusText string, statusColor int, x, y, size float32, font rl.Font) {
 	parts := strings.Split(URLText, "://")
 	if len(parts) != 2 {
 		rl.DrawTextEx(font, URLText, rl.Vector2{x, y}, size, 2, rl.LightGray)

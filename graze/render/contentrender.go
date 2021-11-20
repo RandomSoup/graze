@@ -4,7 +4,7 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 
 //renders the main content pane
 //returns a potential link to nav to
-func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font rl.Font, linkRet *string, scrollOffset int, showScroll *bool) {
+func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font rl.Font, linkRet *string, scrollOffset int) {
 	linkRetl := ""
 	origY := y
 	y -= int32(scrollOffset * int(fontsize))
@@ -75,11 +75,11 @@ func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font 
 	}
 
 	//scrollbar, if it should exist
-	if y > int32(rl.GetScreenHeight()) {
-		*showScroll = true
-	} else {
-		*showScroll = false
-	}
+	// if y > int32(rl.GetScreenHeight()) {
+	// 	*showScroll = true
+	// } else {
+	// 	*showScroll = false
+	// }
 
 	*linkRet = linkRetl
 }
