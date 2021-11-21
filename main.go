@@ -112,6 +112,7 @@ func main() {
 		}
 
 		if rl.IsKeyDown(rl.KeyEnter) && !grazeCores[currTab].QueryActive {
+			scrollOffset = 0
 			grazeCores[currTab].TargetRenderFrames += 4
 			grazeCores[currTab].SBStatus = "load"
 			tabs[currTab] = strings.Split(grazeCores[currTab].QBCurrentURL, "/")[len(strings.Split(grazeCores[currTab].QBCurrentURL, "/"))-1]
@@ -136,9 +137,14 @@ func main() {
 			rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, rl.LightGray)
 		}
 		navLink := ""
-		render.CPRender(grazeCores[currTab].RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset, darkMode)
+		render.CPRender(grazeCores[currTab].RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset, darkMode, rl.GetScreenHeight()-48)
 		if navLink != "" {
-			grazeCores[currTab].QBCurrentURL = navLink
+			scrollOffset = 0
+			if strings.Contains(navLink, "piper://") {
+				grazeCores[currTab].QBCurrentURL = navLink
+			} else {
+				grazeCores[currTab].QBCurrentURL += "" + navLink
+			}
 			grazeCores[currTab].SBStatus = "load"
 			go grazeCores[currTab].Query()
 		}
@@ -157,7 +163,11 @@ func main() {
 				rl.DrawRectangleRounded(rl.Rectangle{tbX + 5, float32(rl.GetScreenHeight() - 18), 20, 16}, 1, 12, rl.Yellow)
 			}
 			rl.DrawTextEx(font, fmt.Sprintf("^%d", i), rl.Vector2{tbX + 6, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.Black)
-			rl.DrawTextEx(font, tab, rl.Vector2{tbX + 30, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.White)
+			if darkMode {
+				rl.DrawTextEx(font, tab, rl.Vector2{tbX + 30, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.White)
+			} else {
+				rl.DrawTextEx(font, tab, rl.Vector2{tbX + 30, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.Black)
+			}
 			tbX += rl.MeasureTextEx(font, tab, 14, 3).X + 32
 		}
 

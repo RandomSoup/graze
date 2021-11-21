@@ -8,7 +8,7 @@ import (
 
 //renders the main content pane
 //returns a potential link to nav to
-func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font rl.Font, linkRet *string, scrollOffset int, dark bool) {
+func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font rl.Font, linkRet *string, scrollOffset int, dark bool, lowYCap int) {
 	linkRetl := ""
 	origY := y
 	y -= int32(scrollOffset * int(fontsize))
@@ -18,6 +18,9 @@ func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font 
 		newLineCount := strings.Count(line.Text, "\n")
 		shouldrender := true
 		if y < origY {
+			shouldrender = false
+		}
+		if y > int32(lowYCap) {
 			shouldrender = false
 		}
 		baseLineOffset := int32(0)
