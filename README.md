@@ -1,4 +1,4 @@
-# graze_internal
-[Private] Internal repo for graze. May include private code.
+# graze
+A Golang based browser with more features than Pipette.
 
-(C) Luminoso 2021 / All Rights Reserved (for now!)
+(C) Luminoso 2021 / MIT License
