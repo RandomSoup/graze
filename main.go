@@ -24,10 +24,11 @@ func main() {
 	grazeCore = graze.GrazeCore{}
 	grazeCore.Init()
 	framecount = 0
+	rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(800, 450, "Graze")
 	rl.SetTargetFPS(60)
 	font = rl.LoadFont("data/font.ttf")
-
+	darkMode = true
 	rl.SetTargetFPS(60)
 	for !rl.WindowShouldClose() {
 
@@ -52,6 +53,10 @@ func main() {
 		if key >= 32 && key <= 125 {
 			grazeCore.QBCurrentURL += string(key)
 
+		}
+		if rl.IsKeyDown(rl.KeyLeftBracket) {
+			grazeCore.QBCurrentURL = "piper://181.192.75.211"
+			go grazeCore.Query()
 		}
 
 		if rl.IsKeyDown(rl.KeyBackspace) && framecount%5 == 0 {
@@ -85,31 +90,28 @@ func main() {
 		/* Main GUI */
 
 		rl.BeginDrawing()
-		//fmt.Printf("[RDB] FC: %v | TRF: %v | shouldRender: %v | FPS:%v\n", framecount, grazeCore.TargetRenderFrames, grazeCore.TargetRenderFrames > 0, rl.GetFPS())
-		//rl.DrawText(fmt.Sprintf("[RDB] FC: %v | TRF: %v | shouldRender: %v", framecount, grazeCore.TargetRenderFrames, grazeCore.TargetRenderFrames > 0), 5, int32(rl.GetScreenHeight()-30), 15, rl.Purple)
-		if grazeCore.TargetRenderFrames > 0 {
-			grazeCore.TargetRenderFrames -= 1
-			if darkMode {
-				rl.ClearBackground(dmBackgroundCol)
-			} else {
-				rl.ClearBackground(rl.RayWhite)
-			}
 
-			//Top Bar (status/util)
-			render.SBRender(grazeCore.QBCurrentURL, grazeCore.SBStatus, grazeCore.SBStatusColor, 5, 0, 20, font, darkMode)
-			if darkMode {
-				rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, dmBackgroundLAcc)
-			} else {
-				rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, rl.LightGray)
-			}
-			navLink := ""
-			render.CPRender(grazeCore.RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset, darkMode)
-			if navLink != "" {
-				grazeCore.QBCurrentURL = navLink
-				grazeCore.SBStatus = "load"
-				go grazeCore.Query()
-			}
+		if darkMode {
+			rl.ClearBackground(dmBackgroundCol)
+		} else {
+			rl.ClearBackground(rl.RayWhite)
 		}
+
+		//Top Bar (status/util)
+		render.SBRender(grazeCore.QBCurrentURL, grazeCore.SBStatus, grazeCore.SBStatusColor, 5, 0, 20, font, darkMode)
+		if darkMode {
+			rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, dmBackgroundLAcc)
+		} else {
+			rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, rl.LightGray)
+		}
+		navLink := ""
+		render.CPRender(grazeCore.RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset, darkMode)
+		if navLink != "" {
+			grazeCore.QBCurrentURL = navLink
+			grazeCore.SBStatus = "load"
+			go grazeCore.Query()
+		}
+
 		rl.EndDrawing()
 
 	}

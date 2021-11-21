@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	//	"io"
 	"io/ioutil"
 	"net"
 	"strings"
@@ -38,6 +39,7 @@ func (p PiperSchemaHandler) Query(uri string) SchemaQueryResponse {
 	conn, err := net.Dial("tcp", hostname)
 	if err != nil {
 		grazeQueryResponse.Status = "Error"
+		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine(err.Error(), "", 0))
 		grazeQueryResponse.StatusColor = 1
 		return grazeQueryResponse
 	}
@@ -52,6 +54,7 @@ func (p PiperSchemaHandler) Query(uri string) SchemaQueryResponse {
 	clen := uint64(0)
 	for {
 		b, _ := reader.ReadByte()
+		fmt.Printf("%v\n", b)
 		respBytes = append(respBytes, b)
 		// uint64 is 8 bytes, + contenttype is 1, so once we have 9 bytes we have ourselves a header
 		if len(respBytes) >= 9 && !gotHeader {
@@ -63,7 +66,7 @@ func (p PiperSchemaHandler) Query(uri string) SchemaQueryResponse {
 			fmt.Printf("Clen:  %v | CType: %v\n", clen, contentType)
 			fmt.Printf("%v\n", respBytes)
 		}
-		if len(respBytes) >= 9+int(clen) && gotHeader {
+		if len(respBytes) >= 9+int(clen) && gotHeader && clen != 18446744073709551615 {
 			break
 		}
 	}
