@@ -7,13 +7,22 @@ import (
 )
 
 //renders the status bar. Who woulda thought?
-func SBRender(URLText, statusText string, statusColor int, x, y, size float32, font rl.Font) {
+func SBRender(URLText, statusText string, statusColor int, x, y, size float32, font rl.Font, dark bool) {
 	parts := strings.Split(URLText, "://")
 	if len(parts) != 2 {
-		rl.DrawTextEx(font, URLText, rl.Vector2{x, y}, size, 2, rl.LightGray)
+		if dark {
+			rl.DrawTextEx(font, URLText, rl.Vector2{x, y}, size, 2, rl.White)
+		} else {
+			rl.DrawTextEx(font, URLText, rl.Vector2{x, y}, size, 2, rl.LightGray)
+		}
 	} else {
-		rl.DrawTextEx(font, parts[0]+"://", rl.Vector2{x, y}, size, 2, rl.LightGray)
-		rl.DrawTextEx(font, parts[1], rl.Vector2{x + float32(rl.MeasureText(parts[0]+"://", int32(size))) + 5, y}, size, 2, rl.Blue)
+		if dark {
+			rl.DrawTextEx(font, parts[0]+"://", rl.Vector2{x, y}, size, 2, rl.White)
+			rl.DrawTextEx(font, parts[1], rl.Vector2{x + float32(rl.MeasureText(parts[0]+"://", int32(size))) + 5, y}, size, 2, dmBlue)
+		} else {
+			rl.DrawTextEx(font, parts[0]+"://", rl.Vector2{x, y}, size, 2, rl.LightGray)
+			rl.DrawTextEx(font, parts[1], rl.Vector2{x + float32(rl.MeasureText(parts[0]+"://", int32(size))) + 5, y}, size, 2, rl.Blue)
+		}
 	}
 
 	statusPosVec := rl.Vector2{float32(rl.GetScreenWidth() - (int(rl.MeasureText(statusText, int32(size))) + 7)), y}
@@ -22,7 +31,11 @@ func SBRender(URLText, statusText string, statusColor int, x, y, size float32, f
 
 	switch statusColor {
 	case 0:
-		rl.DrawTextEx(font, statusText, statusPosVec, size, 2, rl.Black)
+		if dark {
+			rl.DrawTextEx(font, statusText, statusPosVec, size, 2, rl.White)
+		} else {
+			rl.DrawTextEx(font, statusText, statusPosVec, size, 2, rl.Black)
+		}
 	case 1:
 		rl.DrawTextEx(font, statusText, statusPosVec, size, 2, rl.Red)
 	case 2:

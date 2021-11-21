@@ -1,7 +1,6 @@
 package render
 
 import (
-	"fmt"
 	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -9,10 +8,9 @@ import (
 
 //renders the main content pane
 //returns a potential link to nav to
-func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font rl.Font, linkRet *string, scrollOffset int) {
+func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font rl.Font, linkRet *string, scrollOffset int, dark bool) {
 	linkRetl := ""
 	origY := y
-	fmt.Printf("==== NEW RENDER ====\n")
 	y -= int32(scrollOffset * int(fontsize))
 	for _, line := range lines {
 		newLineOffset := int(rl.GetScreenWidth()/int(rl.MeasureText("A", int32(fontsize)))) - 8
@@ -26,32 +24,56 @@ func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font 
 		switch line.Rendtype {
 		case 0:
 			if shouldrender {
-				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize, 3, rl.Black)
+				if dark {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize, 3, rl.White)
+				} else {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize, 3, rl.Black)
+				}
 			}
 			baseLineOffset = int32(fontsize) + linespace
 		case 1:
 			if shouldrender {
-				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/2), 3, rl.Black)
+				if dark {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/2), 3, rl.White)
+				} else {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/2), 3, rl.Black)
+				}
 			}
 			baseLineOffset = int32(fontsize) + int32((fontsize / 2)) + linespace
 		case 2:
 			if shouldrender {
-				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/4), 3, rl.Black)
+				if dark {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/4), 3, rl.White)
+				} else {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/4), 3, rl.Black)
+				}
 			}
 			baseLineOffset = int32(fontsize) + int32((fontsize / 4)) + linespace
 		case 3:
 			if shouldrender {
-				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/8), 3, rl.Black)
+				if dark {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/8), 3, rl.White)
+				} else {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize+(fontsize/8), 3, rl.Black)
+				}
 			}
 			baseLineOffset = int32(fontsize) + int32((fontsize / 8)) + linespace
 		case 4:
 			if shouldrender {
-				rl.DrawRectangle(x, y, int32(5), int32(fontsize), rl.LightGray)
-				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x) + 7, float32(y)}, fontsize, 3, rl.Black)
+
+				if dark {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x) + 7, float32(y)}, fontsize, 3, rl.White)
+					rl.DrawRectangle(x, y, int32(5), int32(fontsize), dmBackgroundLAcc)
+				} else {
+					rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x) + 7, float32(y)}, fontsize, 3, rl.Black)
+					rl.DrawRectangle(x, y, int32(5), int32(fontsize), rl.LightGray)
+				}
 			}
 			baseLineOffset = int32(fontsize) + linespace
 		case 5:
-			if shouldrender {
+			if dark {
+				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize-(fontsize/4), 3, rl.White)
+			} else {
 				rl.DrawTextEx(font, line.Text, rl.Vector2{float32(x), float32(y)}, fontsize-(fontsize/4), 3, rl.Black)
 			}
 			baseLineOffset = int32(fontsize) - int32((fontsize / 4)) + linespace
@@ -82,7 +104,6 @@ func CPRender(lines []RenderLine, x, y, linespace int32, fontsize float32, font 
 			baseLineOffset = int32(fontsize) + linespace
 		}
 		y += baseLineOffset * (int32(newLineCount) + 1)
-		fmt.Printf("Y: %v | newLineCount: %v | delta: %v\n", baseLineOffset, newLineOffset, baseLineOffset*(int32(newLineCount)+1))
 	}
 
 	//scrollbar, if it should exist

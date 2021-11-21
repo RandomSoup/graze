@@ -2,18 +2,21 @@ package main
 
 import (
 	//"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"image/color"
 	"luminoso.dev/graze/graze"
 	"luminoso.dev/graze/graze/render"
 )
 
 var (
-	grazeCore    graze.GrazeCore
-	font         rl.Font
-	framecount   int
-	scrollOffset int
-	shouldScroll bool
+	grazeCore        graze.GrazeCore
+	font             rl.Font
+	framecount       int
+	scrollOffset     int
+	shouldScroll     bool
+	darkMode         bool
+	dmBackgroundCol  = color.RGBA{38, 38, 38, 255}
+	dmBackgroundLAcc = color.RGBA{48, 48, 48, 255}
 )
 
 func main() {
@@ -68,6 +71,10 @@ func main() {
 			grazeCore.TargetRenderFrames += 4
 			scrollOffset -= 1
 		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyD) {
+			darkMode = !darkMode
+			grazeCore.TargetRenderFrames += 4
+		}
 
 		if rl.IsKeyDown(rl.KeyEnter) && !grazeCore.QueryActive {
 			grazeCore.TargetRenderFrames += 4
@@ -82,13 +89,21 @@ func main() {
 		//rl.DrawText(fmt.Sprintf("[RDB] FC: %v | TRF: %v | shouldRender: %v", framecount, grazeCore.TargetRenderFrames, grazeCore.TargetRenderFrames > 0), 5, int32(rl.GetScreenHeight()-30), 15, rl.Purple)
 		if grazeCore.TargetRenderFrames > 0 {
 			grazeCore.TargetRenderFrames -= 1
-			rl.ClearBackground(rl.RayWhite)
+			if darkMode {
+				rl.ClearBackground(dmBackgroundCol)
+			} else {
+				rl.ClearBackground(rl.RayWhite)
+			}
 
 			//Top Bar (status/util)
-			render.SBRender(grazeCore.QBCurrentURL, grazeCore.SBStatus, grazeCore.SBStatusColor, 5, 0, 20, font)
-			rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, rl.LightGray)
+			render.SBRender(grazeCore.QBCurrentURL, grazeCore.SBStatus, grazeCore.SBStatusColor, 5, 0, 20, font, darkMode)
+			if darkMode {
+				rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, dmBackgroundLAcc)
+			} else {
+				rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, rl.LightGray)
+			}
 			navLink := ""
-			render.CPRender(grazeCore.RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset)
+			render.CPRender(grazeCore.RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset, darkMode)
 			if navLink != "" {
 				grazeCore.QBCurrentURL = navLink
 				grazeCore.SBStatus = "load"

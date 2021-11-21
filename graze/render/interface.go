@@ -1,6 +1,13 @@
 package render
 
 import "bytes"
+import "image/color"
+
+var (
+	dmBackgroundCol  = color.RGBA{38, 38, 38, 255}
+	dmBackgroundLAcc = color.RGBA{48, 48, 48, 255}
+	dmBlue           = color.RGBA{55, 109, 173, 255}
+)
 
 /* Rendering */
 
