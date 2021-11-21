@@ -66,6 +66,9 @@ func (p PiperSchemaHandler) Query(uri string) SchemaQueryResponse {
 			fmt.Printf("Clen:  %v | CType: %v\n", clen, contentType)
 			fmt.Printf("%v\n", respBytes)
 		}
+		if clen == 18446744073709551615 && b == 0x0 {
+			break
+		}
 		if len(respBytes) >= 9+int(clen) && gotHeader && clen != 18446744073709551615 {
 			break
 		}
