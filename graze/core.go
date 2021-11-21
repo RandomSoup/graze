@@ -17,7 +17,8 @@ type GrazeCore struct {
 	QBCurrentURL string
 	QueryActive  bool
 	// Main rendering
-	RenderLines []render.RenderLine
+	RenderLines        []render.RenderLine
+	TargetRenderFrames int
 }
 
 //initial setup
@@ -26,6 +27,7 @@ func (g *GrazeCore) Init() {
 	g.QBCurrentURL = "graze://home"
 	g.SBStatus = "Idle"
 	g.SBStatusColor = 0
+	g.TargetRenderFrames = 8
 	g.QueryActive = false
 	//populate data for about page
 	g.Query()
@@ -65,5 +67,6 @@ func (g *GrazeCore) Query() {
 		g.SBStatus = "error"
 		g.SBStatusColor = 1
 	}
+	g.TargetRenderFrames += 4
 	g.QueryActive = false
 }

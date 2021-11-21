@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"runtime"
+
 	"luminoso.dev/graze/graze/gconst"
 	"luminoso.dev/graze/graze/render"
 )
@@ -10,6 +12,8 @@ graze.go
 implements the graze:// internal schema
 (C) Luminoso 2021
 */
+
+var commitHash string
 
 type GrazeSchemaHandler struct {
 }
@@ -27,7 +31,7 @@ func (g GrazeSchemaHandler) Query(uri string) SchemaQueryResponse {
 		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("Graze: The Simple Browser", "", 1))
 		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("-------------------------", "", 0))
 		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("Built on Go and Raylib", "", 0))
-		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("Graze "+gconst.VERSION, "", 6))
+		grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("Graze "+gconst.VERSION+" ("+runtime.GOOS+"/"+runtime.GOARCH+") built by: "+runtime.Compiler, "", 6))
 		if gconst.DEBUG_ENABLED {
 			grazeQueryResponse.Contents = append(grazeQueryResponse.Contents, render.NewRendLine("Debug Mode Active (graze/gconst/const.go:DEBUG_ENABLED)", "", 8))
 		}
