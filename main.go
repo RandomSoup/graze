@@ -45,18 +45,41 @@ func main() {
 		if framecount > 256 {
 			framecount = 0
 		}
-		ltcrl := rl.IsKeyPressed(rl.KeyLeftControl)
 		/* Keyboardy/Input things */
 		key := rl.GetCharPressed()
 		if key >= 32 && key <= 125 {
 			grazeCores[currTab].QBCurrentURL += string(key)
 		}
 
-		// and again for tabs
-		if key >= 48 && key <= 57 && ltcrl {
-			if len(tabs) > int(key)-48 {
-				currTab = int(key) - 48
-			}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyOne) && len(tabs) > 1 {
+			currTab = 1
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyTwo) && len(tabs) > 2 {
+			currTab = 2
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyThree) && len(tabs) > 3 {
+			currTab = 3
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyFour) && len(tabs) > 4 {
+			currTab = 4
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyFive) && len(tabs) > 5 {
+			currTab = 5
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeySix) && len(tabs) > 6 {
+			currTab = 6
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeySeven) && len(tabs) > 7 {
+			currTab = 7
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyEight) && len(tabs) > 8 {
+			currTab = 8
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyNine) && len(tabs) > 9 {
+			currTab = 9
+		}
+		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyZero) && len(tabs) > 0 {
+			currTab = 0
 		}
 
 		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyN) && framecount%5 == 0 {
