@@ -1,179 +1,107 @@
 package main
 
 import (
-	//"fmt"
-	"fmt"
-	"image/color"
-	"strings"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gdamore/tcell/v2"
 	"luminoso.dev/graze/graze"
 	"luminoso.dev/graze/graze/render"
+	"os"
+	"strings"
 )
 
 var (
-	grazeCores       []graze.GrazeCore
-	font             rl.Font
-	framecount       int
-	scrollOffset     int
-	shouldScroll     bool
-	darkMode         bool
-	dmBackgroundCol  = color.RGBA{38, 38, 38, 255}
-	dmBackgroundLAcc = color.RGBA{48, 48, 48, 255}
-	tabs             []string
-	currTab          int
+	grazeCores   []graze.GrazeCore
+	framecount   int
+	scrollOffset int
+	shouldScroll bool
+	darkMode     bool
+	tabs         []string
+	currTab      int
 )
 
 func main() {
-	/* Initialize Main State */
+	defStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
+	//boxStyle := tcell.StyleDefault.Foreground(tcell.ColorWhite).Background(tcell.ColorPurple)
 	currTab = 0
 	tabs = append(tabs, "home")
 	grazeCores = append(grazeCores, graze.GrazeCore{})
 
 	grazeCores[currTab].Init()
 	framecount = 0
-	rl.SetConfigFlags(rl.FlagWindowResizable)
-	rl.InitWindow(800, 450, "Graze")
-	rl.SetTargetFPS(60)
-	font = rl.LoadFont("data/font.ttf")
-	darkMode = true
-	rl.SetTargetFPS(60)
 
-	for !rl.WindowShouldClose() {
+	// Initialize screen
+	s, err := tcell.NewScreen()
+	if err != nil {
+		//log.Fatalf("%+v", err)
+	}
+	if err := s.Init(); err != nil {
+		//log.Fatalf("%+v", err)
+	}
+	s.SetStyle(defStyle)
+	s.EnableMouse()
+	s.EnablePaste()
+	s.Clear()
+
+	quit := func() {
+		s.Fini()
+		os.Exit(0)
+	}
+	for {
 		framecount += 1
-
 		if framecount > 256 {
 			framecount = 0
 		}
-		/* Keyboardy/Input things */
-		key := rl.GetCharPressed()
-		if key >= 32 && key <= 125 {
-			grazeCores[currTab].QBCurrentURL += string(key)
+		// Update screen
+		if grazeCores[currTab].ForceUpdate {
+			s.Clear()
+			grazeCores[currTab].ForceUpdate = false
 		}
+		render.SBRender(grazeCores[currTab].QBCurrentURL, grazeCores[currTab].SBStatus, grazeCores[currTab].SBStatusColor, 5, 0, 20, true, s)
+		navlink := ""
+		render.CPRender(grazeCores[currTab].RenderLines, int32(5), int32(4), int32(3), 18, &navlink, scrollOffset, darkMode, 900, s)
+		s.Show()
+		// Poll event
+		ev := s.PollEvent()
 
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyOne) && len(tabs) > 1 {
-			currTab = 1
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyTwo) && len(tabs) > 2 {
-			currTab = 2
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyThree) && len(tabs) > 3 {
-			currTab = 3
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyFour) && len(tabs) > 4 {
-			currTab = 4
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyFive) && len(tabs) > 5 {
-			currTab = 5
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeySix) && len(tabs) > 6 {
-			currTab = 6
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeySeven) && len(tabs) > 7 {
-			currTab = 7
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyEight) && len(tabs) > 8 {
-			currTab = 8
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyNine) && len(tabs) > 9 {
-			currTab = 9
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyZero) && len(tabs) > 0 {
-			currTab = 0
-		}
+		// Process event
+		switch ev := ev.(type) {
+		case *tcell.EventResize:
+			s.Sync()
+		case *tcell.EventKey:
+			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
+				quit()
+			} else if ev.Key() == tcell.KeyCtrlL {
+				//	s.Sync()
+			} else if ev.Rune() == 'C' || ev.Rune() == 'c' {
+				//	s.Clear()
+			}
+			if ev.Key() == tcell.KeyBackspace {
+				slen := len(grazeCores[currTab].QBCurrentURL)
+				if slen > 0 {
+					grazeCores[currTab].QBCurrentURL = grazeCores[currTab].QBCurrentURL[:slen-1]
+				}
+				s.Clear()
+			} else if ev.Key() == tcell.KeyEnter {
+				scrollOffset = 0
+				grazeCores[currTab].TargetRenderFrames += 4
+				grazeCores[currTab].SBStatus = "load"
+				tabs[currTab] = strings.Split(grazeCores[currTab].QBCurrentURL, "/")[len(strings.Split(grazeCores[currTab].QBCurrentURL, "/"))-1]
+				s.Clear()
+				go grazeCores[currTab].Query()
+			} else if ev.Rune() != 0 {
+				grazeCores[currTab].QBCurrentURL += string(ev.Rune())
+				s.Clear()
+			}
 
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyN) && framecount%5 == 0 {
-			if len(tabs) < 10 {
-				newInd := len(tabs)
-				grazeCores = append(grazeCores, graze.GrazeCore{})
-				grazeCores[newInd].Init()
-				currTab = newInd
-				tabs = append(tabs, "home")
+		case *tcell.EventMouse:
+			//_, _ := ev.Position()
+			button := ev.Buttons()
+			// Only process button events, not wheel events
+			button &= tcell.ButtonMask(0xff)
+
+			switch ev.Buttons() {
+			case tcell.ButtonNone:
+				break
 			}
 		}
-
-		if rl.IsKeyDown(rl.KeyBackspace) && framecount%5 == 0 {
-			slen := len(grazeCores[currTab].QBCurrentURL)
-			if slen > 0 {
-				grazeCores[currTab].QBCurrentURL = grazeCores[currTab].QBCurrentURL[:slen-1]
-			}
-		}
-		if rl.IsKeyDown(rl.KeyUp) {
-			grazeCores[currTab].TargetRenderFrames += 4
-			scrollOffset += 1
-		}
-		if rl.IsKeyDown(rl.KeyDown) {
-			grazeCores[currTab].TargetRenderFrames += 4
-			scrollOffset -= 1
-		}
-		if rl.IsKeyDown(rl.KeyLeftControl) && rl.IsKeyDown(rl.KeyD) {
-			darkMode = !darkMode
-			grazeCores[currTab].TargetRenderFrames += 4
-		}
-
-		if rl.IsKeyDown(rl.KeyEnter) && !grazeCores[currTab].QueryActive {
-			scrollOffset = 0
-			grazeCores[currTab].TargetRenderFrames += 4
-			grazeCores[currTab].SBStatus = "load"
-			tabs[currTab] = strings.Split(grazeCores[currTab].QBCurrentURL, "/")[len(strings.Split(grazeCores[currTab].QBCurrentURL, "/"))-1]
-			go grazeCores[currTab].Query()
-		}
-
-		/* Main GUI */
-
-		rl.BeginDrawing()
-
-		if darkMode {
-			rl.ClearBackground(dmBackgroundCol)
-		} else {
-			rl.ClearBackground(rl.RayWhite)
-		}
-
-		//Top Bar (status/util)
-		render.SBRender(grazeCores[currTab].QBCurrentURL, grazeCores[currTab].SBStatus, grazeCores[currTab].SBStatusColor, 5, 0, 20, font, darkMode)
-		if darkMode {
-			rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, dmBackgroundLAcc)
-		} else {
-			rl.DrawLine(0, 23, int32(rl.GetScreenWidth()), 23, rl.LightGray)
-		}
-		navLink := ""
-		render.CPRender(grazeCores[currTab].RenderLines, int32(5), int32(30), int32(3), 18, font, &navLink, scrollOffset, darkMode, rl.GetScreenHeight()-48)
-		if navLink != "" {
-			scrollOffset = 0
-			if strings.Contains(navLink, "piper://") {
-				grazeCores[currTab].QBCurrentURL = navLink
-			} else {
-				grazeCores[currTab].QBCurrentURL += "" + navLink
-			}
-			grazeCores[currTab].SBStatus = "load"
-			go grazeCores[currTab].Query()
-		}
-		//bottom bar (tabs)
-		if darkMode {
-			rl.DrawLine(0, int32(rl.GetScreenHeight()-20), int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()-20), dmBackgroundLAcc)
-		} else {
-			rl.DrawLine(0, int32(rl.GetScreenHeight()-20), int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()-20), rl.LightGray)
-		}
-
-		tbX := float32(0)
-		for i, tab := range tabs {
-			if i == currTab {
-				rl.DrawRectangleRounded(rl.Rectangle{tbX + 5, float32(rl.GetScreenHeight() - 18), 20, 16}, 1, 12, rl.Orange)
-			} else {
-				rl.DrawRectangleRounded(rl.Rectangle{tbX + 5, float32(rl.GetScreenHeight() - 18), 20, 16}, 1, 12, rl.Yellow)
-			}
-			rl.DrawTextEx(font, fmt.Sprintf("^%d", i), rl.Vector2{tbX + 6, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.Black)
-			if darkMode {
-				rl.DrawTextEx(font, tab, rl.Vector2{tbX + 30, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.White)
-			} else {
-				rl.DrawTextEx(font, tab, rl.Vector2{tbX + 30, float32(rl.GetScreenHeight() - 16)}, 14, 3, rl.Black)
-			}
-			tbX += rl.MeasureTextEx(font, tab, 14, 3).X + 32
-		}
-
-		rl.EndDrawing()
-
 	}
-
-	rl.CloseWindow()
 }

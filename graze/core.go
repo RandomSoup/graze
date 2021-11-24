@@ -19,6 +19,7 @@ type GrazeCore struct {
 	// Main rendering
 	RenderLines        []render.RenderLine
 	TargetRenderFrames int
+	ForceUpdate        bool
 }
 
 //initial setup
@@ -69,4 +70,5 @@ func (g *GrazeCore) Query() {
 	}
 	g.TargetRenderFrames += 4
 	g.QueryActive = false
+	g.ForceUpdate = true
 }

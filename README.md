@@ -1,4 +1,4 @@
-# graze: Extras branch
-fun extra hacks or features using the graze tech that aren't required to be useful or worthy of merging.
+# graze: console-ui branch
 
+Branch based on the extras branch. Attempting to take advantage of Graze's somewhat modular architecture to port it to a TUI interface. (and somewhat succeeding!)
 (C) Luminoso 2021 / MIT)
