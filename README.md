@@ -1,4 +1,4 @@
-# graze: Extras branch
-fun extra hacks or features using the graze tech that aren't required to be useful or worthy of merging.
+# graze
+A Golang based browser with more features than Pipette.
 
-(C) Luminoso 2021 / MIT)
+(C) Luminoso 2021 / MIT License
