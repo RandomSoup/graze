@@ -29,7 +29,7 @@ the standardized delimeter for params is a space.
 */
 
 //as this file may be referenced stand-alone, a copyright notice is included:
-//(C) Luminoso 2021 / All Rights Reserved (for now!)
+//(C) Luminoso 2021 / MIT
 
 type WIPCSchemaHandler struct {
 }
