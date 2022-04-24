@@ -112,7 +112,7 @@ func main() {
 		}
 
 		if rl.IsKeyDown(rl.KeyEnter) && !grazeCores[currTab].QueryActive {
-			if len(strings.Split(grazeCores[currTab].QBCurrentURL, "/")) >= 2{
+			if len(strings.Split(grazeCores[currTab].QBCurrentURL, "://")) >= 2{
 				scrollOffset = 0
 				grazeCores[currTab].TargetRenderFrames += 4
 				grazeCores[currTab].SBStatus = "load"
