@@ -112,11 +112,13 @@ func main() {
 		}
 
 		if rl.IsKeyDown(rl.KeyEnter) && !grazeCores[currTab].QueryActive {
-			scrollOffset = 0
-			grazeCores[currTab].TargetRenderFrames += 4
-			grazeCores[currTab].SBStatus = "load"
-			tabs[currTab] = strings.Split(grazeCores[currTab].QBCurrentURL, "/")[len(strings.Split(grazeCores[currTab].QBCurrentURL, "/"))-1]
-			go grazeCores[currTab].Query()
+			if len(strings.Split(grazeCores[currTab].QBCurrentURL, "://")) >= 2{
+				scrollOffset = 0
+				grazeCores[currTab].TargetRenderFrames += 4
+				grazeCores[currTab].SBStatus = "load"
+				tabs[currTab] = strings.Split(grazeCores[currTab].QBCurrentURL, "/")[len(strings.Split(grazeCores[currTab].QBCurrentURL, "/"))-1]
+				go grazeCores[currTab].Query()
+			}
 		}
 
 		/* Main GUI */
